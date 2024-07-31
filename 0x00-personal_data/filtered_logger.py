@@ -43,6 +43,20 @@ def get_logger() -> logging.Logger:
     return logger
 
 
+def main() -> None:
+    """ Main function"""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users;")
+    field_names = [i[0] for i in cursor.description]
+    logger = get_logger()
+    for row in cursor:
+        str_row = ''.join(f'{f}={str(f)}' for f, v in zip(field_names, row))
+        logger.info(str_row.strip())
+    cursor.close()
+    db.close()
+
+
 class RedactingFormatter(logging.Formatter):
     """ Redacting Formatter class
         """
@@ -59,3 +73,7 @@ class RedactingFormatter(logging.Formatter):
         """Filters values in incoming log records using filter_datum"""
         return filter_datum(self.fields, self.REDACTION,
                             super().format(record), self.SEPARATOR)
+
+
+if __name__ == "__main__":
+    main()
