@@ -58,13 +58,12 @@ def main() -> None:
     fields = "name,email,phone,ssn,password,ip,last_login,user_agent"
     cols = fields.split(",")
     db = get_db()
-    #cur = db.cursor()
-    query = ("SELECT * FROM users;")
+    query = "SELECT {} FROM users;".format(fields)
     logger = get_logger()
     with db.cursor() as cursor:
         cursor.execute(query)
         rows = cursor.fetchall()
-        for row in cursor:
+        for row in rows:
             record = map(
                 lambda x: '{}={}'.format(x[0], x[1]),
                 zip(cols, row),
