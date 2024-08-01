@@ -41,11 +41,13 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     password = environ.get("PERSONAL_DATA_DB_PASSWORD", "")
     host = environ.get("PERSONAL_DATA_DB_HOST", "localhost")
     db_name = environ.get("PERSONAL_DATA_DB_NAME", "")
-    cnnect = mysql.connector.connection.MySQLConnection(user=username,
-                                                        port=3306,
-                                                        password=password,
-                                                        host=host,
-                                                        database=db_name)
+    cnnect = mysql.connector.connection.MySQLConnection(
+        user=username,
+        port=3306,
+        password=password,
+        host=host,
+        database=db_name
+        )
     return cnnect
 
 
