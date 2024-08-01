@@ -8,8 +8,8 @@ from typing import List
 from os import environ
 
 
-PII_FIELDS = {"name": "name", "email": "email", "phone": "phone",
-              "ssn": "ssn", "password": "password"}
+PII_FIELDS = {"name", "email", "phone",
+              "ssn", "password"}
 
 
 def filter_datum(fields: List[str], redaction: str,
