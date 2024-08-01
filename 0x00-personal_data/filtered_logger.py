@@ -41,7 +41,7 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     password = environ.get("PERSONAL_DATA_DB_PASSWORD", "")
     host = environ.get("PERSONAL_DATA_DB_HOST", "localhost")
     db_name = environ.get("PERSONAL_DATA_DB_NAME", "")
-    cnnect = mysql.connector.connection.MySQLConnection(
+    cnnect = mysql.connector.connect(
         user=username,
         port=3306,
         password=password,
@@ -55,24 +55,19 @@ def main():
     """ Obtain a database connection using get_db and retrieves all rows
     in the users table and display each row under a filtered format
     """
-    fields = "name,email,phone,ssn,password,ip,last_login,user_agent"
-    cols = fields.split(',')
     db = get_db()
-    query = "SELECT {} FROM users;".format(fields)
-    logger = get_logger()
-    with db.cursor() as cursor:
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        for row in rows:
-            record = map(
-                lambda x: '{}={}'.format(x[0], x[1]),
-                zip(cols, row),
-            )
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users;")
+    field_names = [i[0] for i in cursor.description]
 
-        str_row = '{};'.format('; '.join(list(record)))
-        args = ("user_data", logging.INFO, None, None, str_row, None, None)
-        log_rec = logging.LogRecord(*args)
-        logger.handle(log_rec)
+    logger = get_logger()
+
+    for row in cursor:
+        str_row = ''.join(f'{f}={str(r)}; ' for r, f in zip(row, field_names))
+        logger.info(str_row.strip())
+
+    cursor.close()
+    db.close()
 
 
 class RedactingFormatter(logging.Formatter):
