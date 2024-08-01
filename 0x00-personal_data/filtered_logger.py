@@ -52,16 +52,26 @@ def main() -> None:
     """ Obtain a database connection using get_db and retrieves all rows
     in the users table and display each row under a filtered format
     """
+    fields = "name,email,phone,ssn,password,ip,last_login,user_agent"
+    cols = fields.split(",")
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM users;")
-    field_names = [i[0] for i in cursor.description]
+    query = ("SELECT * FROM users;")
+    #field_names = [i[0] for i in cursor.description]
     logger = get_logger()
-    for row in cursor:
-        str_row = ''.join(f'{f}={str(f)}' for f, v in zip(field_names, row))
-        logger.info(str_row.strip())
-    cursor.close()
-    db.close()
+    with cursor() as cursor:
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        for row in cursor:
+            record = map(
+                lambda x: '{}={}'.format(x[0], x[1]),
+                zip(cols, row),
+            )
+
+        str_row = '{};'.format('; '.join(list(record)))
+        args = ("user_data", logging.INFO, None, None, str_row, None, None)
+        log_rec = logging.LogRecord(*args)
+        logger.handle(log_rec)
 
 
 class RedactingFormatter(logging.Formatter):
@@ -70,6 +80,7 @@ class RedactingFormatter(logging.Formatter):
 
     REDACTION = "***"
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
+    FORMAT_FIELDS = ('name', 'levelname', 'asctime', 'message')
     SEPARATOR = ";"
 
     def __init__(self, fields: List[str]):
@@ -78,8 +89,10 @@ class RedactingFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Filters values in incoming log records using filter_datum"""
-        return filter_datum(self.fields, self.REDACTION,
-                            super().format(record), self.SEPARATOR)
+        msg = super(RedactingFormatter, self).format(record)
+        txt = filter_datum(self.fields, self.REDACTION,
+                            msg, self.SEPARATOR)
+        return txt
 
 
 if __name__ == "__main__":
