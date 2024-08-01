@@ -27,7 +27,7 @@ def get_logger() -> logging.Logger:
     """ Returns a logger object"""
     logger = logging.getLogger("user_data")
     handler = logging.StreamHandler()
-    handler.setFormatter(RedactingFormatter(List(PII_FIELDS)))
+    handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
     logger.setLevel(logging.INFO)
     logger.propagate = False
     logger.addHandler(handler)
@@ -57,11 +57,11 @@ def main() -> None:
     """
     fields = "name,email,phone,ssn,password,ip,last_login,user_agent"
     cols = fields.split(",")
+    db = get_db()
+    cur = db.cursor()
     query = ("SELECT * FROM users;")
     logger = get_logger()
-    db = get_db()
-    cursor = db.cursor()
-    with cursor() as cursor:
+    with cur() as cursor:
         cursor.execute(query)
         rows = cursor.fetchall()
         for row in cursor:
