@@ -17,7 +17,7 @@ def filter_datum(fields: List[str], redaction: str,
     """ Returns a log message obfuscated by PII values"""
     for f in fields:
         message = re.sub(f'{f}=.*?{separator}',
-                         f'{f}={redaction}{separator})', message)
+                         f'{f}={redaction}{separator}', message)
     return message
 
 
