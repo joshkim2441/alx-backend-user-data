@@ -21,6 +21,17 @@ def filter_datum(fields: List[str], redaction: str,
     return message
 
 
+def get_logger() -> logging.Logger:
+    """ Returns a logger object"""
+    logger = logging.getLogger('user_data')
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+    handler = logging.StreamHandler()
+    handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
+    logger.addHandler(handler)
+    return logger
+
+
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """ Returns a connector object"""
     username = environ.get('PERSONAL_DATA_DB_USERNAME', 'root')
@@ -31,17 +42,6 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
                                                       password=password,
                                                       host=host,
                                                       database=db_name)
-
-
-def get_logger() -> logging.Logger:
-    """ Returns a logger object"""
-    logger = logging.getLogger('user_data')
-    logger.setLevel(logging.INFO)
-    logger.propagate = False
-    handler = logging.StreamHandler()
-    handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
-    logger.addHandler(handler)
-    return logger
 
 
 def main() -> None:
