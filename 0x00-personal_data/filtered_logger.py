@@ -8,16 +8,19 @@ from typing import List
 from os import environ
 
 
+patterns = {
+    'extract': lambda x, y: r'(?P<field>{})=[^{}]*'.format('|'.join(x), y),
+    'replace': lambda x: r'\g<field>={}'.format(x),
+}
+
 PII_FIELDS = {"name", "email", "phone", "ssn", "password"}
 
 
 def filter_datum(fields: List[str], redaction: str,
                  message: str, separator: str) -> str:
     """ Returns a log message obfuscated by PII values"""
-    for f in fields:
-        message = re.sub(f'{f}=.*?{separator}',
-                         f'{f}={redaction}{separator}', message)
-    return message
+    extract, replace = (patterns["extract"], patterns["replace"])
+    return re.sub(extract(fields, separator), replace(redaction), message)
 
 
 def get_logger() -> logging.Logger:
@@ -26,7 +29,7 @@ def get_logger() -> logging.Logger:
     logger.setLevel(logging.INFO)
     logger.propagate = False
     handler = logging.StreamHandler()
-    handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
+    handler.setFormatter(RedactingFormatter(PII_FIELDS))
     logger.addHandler(handler)
     return logger
 
