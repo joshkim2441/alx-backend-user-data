@@ -51,12 +51,12 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     return cnnect
 
 
-def main() -> None:
+def main():
     """ Obtain a database connection using get_db and retrieves all rows
     in the users table and display each row under a filtered format
     """
     fields = "name,email,phone,ssn,password,ip,last_login,user_agent"
-    cols = fields.split(",")
+    cols = fields.split(',')
     db = get_db()
     query = "SELECT {} FROM users;".format(fields)
     logger = get_logger()
