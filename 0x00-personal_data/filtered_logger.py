@@ -57,7 +57,6 @@ def main() -> None:
     db = get_db()
     cursor = db.cursor()
     query = ("SELECT * FROM users;")
-    #field_names = [i[0] for i in cursor.description]
     logger = get_logger()
     with cursor() as cursor:
         cursor.execute(query)
@@ -91,7 +90,7 @@ class RedactingFormatter(logging.Formatter):
         """Filters values in incoming log records using filter_datum"""
         msg = super(RedactingFormatter, self).format(record)
         txt = filter_datum(self.fields, self.REDACTION,
-                            msg, self.SEPARATOR)
+                           msg, self.SEPARATOR)
         return txt
 
 
