@@ -33,19 +33,22 @@ def get_logger() -> logging.Logger:
 
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
-    """ Returns a connector object"""
-    username = environ.get('PERSONAL_DATA_DB_USERNAME', 'root')
-    password = environ.get('PERSONAL_DATA_DB_PASSWORD', '')
-    host = environ.get("PERSONAL_DATA_DB_HOST", 'localhost')
-    db_name = environ.get('PERSONAL_DATA_DB_NAME')
-    return mysql.connector.connection.MySQLConnection(user=username,
+    """ Returns a connector object to a MySQL database """
+    username = environ.get("PERSONAL_DATA_DB_USERNAME", "root")
+    password = environ.get("PERSONAL_DATA_DB_PASSWORD", "")
+    host = environ.get("PERSONAL_DATA_DB_HOST", "localhost")
+    db_name = environ.get("PERSONAL_DATA_DB_NAME")
+    cnx = mysql.connector.connection.MySQLConnection(user=username,
                                                       password=password,
                                                       host=host,
                                                       database=db_name)
+    return cnx
 
 
 def main() -> None:
-    """ Main function"""
+    """ Obtain a database connection using get_db and retrieves all rows
+    in the users table and display each row under a filtered format
+    """
     db = get_db()
     cursor = db.cursor()
     cursor.execute("SELECT * FROM users;")
