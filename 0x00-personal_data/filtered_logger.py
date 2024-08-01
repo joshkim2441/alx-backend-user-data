@@ -9,7 +9,7 @@ from os import environ
 
 
 PII_FIELDS = {"name": "name", "email": "email", "phone": "phone",
-       "ssn": "ssn", "password": "password"}
+              "ssn": "ssn", "password": "password"}
 
 
 def filter_datum(fields: List[str], redaction: str,
@@ -29,7 +29,8 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     db_name = environ.get('PERSONAL_DATA_DB_NAME')
     return mysql.connector.connection.MySQLConnection(user=username,
                                                       password=password,
-                                   host=host, database=db_name)
+                                                      host=host,
+                                                      database=db_name)
 
 
 def get_logger() -> logging.Logger:

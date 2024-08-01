@@ -2,12 +2,20 @@
 """ Password encryption and Validation"""
 import bcrypt
 
-def has_password(password: str) -> bytes:
-    """ Returns a salted and hashed password"""
+
+def hash_password(password: str) -> bytes:
+    """  Generates a salted and hashed password.
+
+        Args:
+                password (str): A string containing the plain text
+                password to be hashed.
+
+        Returns:
+                bytes: A byte string representing the salted, hashed password.
+    """
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password.encode(), salt)
     return hashed
-
 
 
 def is_valid(hashed_password: bytes, password: str) -> bool:
