@@ -58,10 +58,10 @@ def main() -> None:
     fields = "name,email,phone,ssn,password,ip,last_login,user_agent"
     cols = fields.split(",")
     db = get_db()
-    cursor = db.cursor()
+    cur = db.cursor()
     query = ("SELECT * FROM users;")
     logger = get_logger()
-    with cursor() as cursor:
+    with cur() as cursor:
         cursor.execute(query)
         rows = cursor.fetchall()
         for row in cursor:
