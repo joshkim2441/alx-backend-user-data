@@ -4,8 +4,8 @@
 import re
 import logging
 import mysql.connector
-from typing import List
 from os import environ
+from typing import List
 
 
 patterns = {
@@ -27,10 +27,11 @@ def get_logger() -> logging.Logger:
     """ Returns a logger object"""
     logger = logging.getLogger("user_data")
     handler = logging.StreamHandler()
-    handler.setFormatter(RedactingFormatter(PII_FIELDS))
+    handler.setFormatter(RedactingFormatter(List(PII_FIELDS)))
     logger.setLevel(logging.INFO)
     logger.propagate = False
     logger.addHandler(handler)
+
     return logger
 
 
@@ -89,9 +90,9 @@ class RedactingFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         """Filters values in incoming log records using filter_datum"""
         msg = super(RedactingFormatter, self).format(record)
-        txt = filter_datum(self.fields, self.REDACTION,
+        rec = filter_datum(self.fields, self.REDACTION,
                            msg, self.SEPARATOR)
-        return txt
+        return rec
 
 
 if __name__ == "__main__":
