@@ -18,7 +18,7 @@ class BasicAuth(Auth):
         """ Extract Base64 string from header
         """
         if type(authorization_header) == str:
-            pattern = r'Basic (?P<token>.+)$'
+            pattern = r'Basic (?P<token>.+)'
             match = re.fullmatch(pattern, authorization_header.strip())
         if match is not None:
             return match.group('token')
@@ -52,7 +52,7 @@ class BasicAuth(Auth):
         return (None, None)
 
     def user_object_from_credentials(self, user_email: str, user_pwd: str
-                                     ) -> TypeVar('User'):
+                                     ) -> TypeVar('User'): # type: ignore
         """ Returns the User instance based on his email and password
         """
         if type(user_email) == str and type(user_pwd) == str:
@@ -66,22 +66,12 @@ class BasicAuth(Auth):
                 return None
         return None
 
-    def current_user(self, request=None) -> TypeVar('User'):
+    def current_user(self, request=None
+                     ) -> TypeVar('User'): # type: ignore
         """ Get current user from request
         """
         auth_header = self.authorization_header(request)
-        if auth_header is None:
-            return None
         b64_auth = self.extract_base64_authorization_header(auth_header)
-        if b64_auth is None:
-            return None
         decoded_auth = self.decode_base64_authorization_header(b64_auth)
-        if decoded_auth is None:
-            return None
-        user_creds = self.extract_user_credentials(decoded_auth)
-        if user_creds is None:
-            return None
-        user = self.user_object_from_credentials(user_creds[0], user_creds[1])
-        if user is None:
-            return None
-        return user
+        email, password = self.extract_user_credentials(decoded_auth)
+        return self.user_object_from_credentials(email, password)
