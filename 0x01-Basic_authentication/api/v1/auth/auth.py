@@ -2,10 +2,8 @@
 """ Module of Auth
 """
 import re
-from api.v1.views import app_views
 from flask import request
 from typing import List, TypeVar
-from models.user import User
 
 
 class Auth:
@@ -20,7 +18,7 @@ class Auth:
                 if exclusion_path[-1] == '*':
                     pattern = '{}.*'.format(exclusion_path[0:-1])
                 elif exclusion_path[-1] == '/':
-                    pattern = '{}./*'.format(exclusion_path[0:-1])
+                    pattern = '{}/*'.format(exclusion_path[0:-1])
                 else:
                     pattern = '{}/*'.format(exclusion_path)
                 if re.match(pattern, path):
