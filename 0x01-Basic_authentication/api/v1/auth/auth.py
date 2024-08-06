@@ -9,10 +9,10 @@ from models.user import User
 
 
 class Auth:
-    """ Auth class
+    """ Authentication class
     """
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """ Require Auth
+        """ Check if a path requires Authentication
         """
         if path is not None and excluded_paths is not None:
             for exclusion_path in map(lambda x: x.strip(), excluded_paths):
@@ -20,7 +20,7 @@ class Auth:
                 if exclusion_path[-1] == '*':
                     pattern = '{}.*'.format(exclusion_path[0:-1])
                 elif exclusion_path[-1] == '/':
-                    pattern = '{}.*'.format(exclusion_path[0:-1])
+                    pattern = '{}./*'.format(exclusion_path[0:-1])
                 else:
                     pattern = '{}/*'.format(exclusion_path)
                 if re.match(pattern, path):
