@@ -31,17 +31,17 @@ def login() -> str:
         if not user.is_valid_password(password):
             return jsonify({"error": "wrong password"}), 401
 
-        from api.v1.app import auth
+    from api.v1.app import auth
 
-        user = curr_user[0]
-        session_cookie = auth.create_session(user.id)
+    user = curr_user[0]
+    session_cookie = auth.create_session(user.id)
 
-        SESSION_NAME = getenv("SESSION_NAME")
+    SESSION_NAME = getenv("SESSION_NAME")
 
-        response = jsonify(user.to_json())
-        response.set_cookie(SESSION_NAME, session_cookie)
+    response = jsonify(user.to_json())
+    response.set_cookie(SESSION_NAME, session_cookie)
 
-        return response
+    return response
 
 
 @app_views.route('/auth_session/logout',
