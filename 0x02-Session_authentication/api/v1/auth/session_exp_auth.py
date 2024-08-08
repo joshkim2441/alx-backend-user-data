@@ -20,24 +20,19 @@ class SessionExpAuth(SessionAuth):
         except Exception:
             session_duration = 0
         self.session_duration = session_duration
-        if self.session_duration <= 0:
-            self.session_duration = 0
 
-    def create_session(self, user_id: str = None) -> str:
+    def create_session(self, user_id=None):
         """ Creates a Session ID for a user
         """
-        if user_id is None or type(user_id) != str:
-            return None
         session_id = super().create_session(user_id)
+
         if session_id is None:
             return None
 
         session_dict = {
-            session_id: {
-                'user_id': user_id,
-                'created_at': datetime.now()
-                }
-            }
+            'user_id': user_id,
+            'created_at': datetime.now()
+        }
         self.user_id_by_session_id[session_id] = session_dict
         return session_id
 
@@ -64,7 +59,7 @@ class SessionExpAuth(SessionAuth):
 
         expired_time = created_at + timedelta(seconds=self.session_duration)
 
-        if expired_time < datetime.utcnow():
+        if expired_time < datetime.now():
             return None
 
-        return self.session_dict.get('user_id')
+        return session_dict.get('user_id')

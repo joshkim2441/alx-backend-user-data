@@ -2,10 +2,9 @@
 """
 Route module for the API
 """
-import os
 from os import getenv
 from flask import Flask, jsonify, abort, request
-from flask_cors import (CORS, cross_origin)
+from flask_cors import CORS
 
 from api.v1.views import app_views
 
@@ -16,6 +15,7 @@ app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
 AUTH_TYPE = getenv("AUTH_TYPE")
+
 if AUTH_TYPE == "auth":
     from api.v1.auth.auth import Auth
     auth = Auth()
@@ -59,21 +59,25 @@ def authenticate_user():
     """ Authenticates the user brfore processing
     a request
     """
-    if auth:
-        excluded = [
-            '/api/v1/status/',
-            '/api/v1/unauthorized/',
-            '/api/v1/forbidden/',
-            '/api/v1/auth_session/login/'
-        ]
-    if auth.require_auth(request.path, excluded):
-        user = auth.current_user(request)
-        if auth.authorization_header(request) is None and \
-           auth.session_cookie(request) is None:
-            abort(401)
-        if user is None:
-            abort(403)
-        request.current_user = user
+    if auth is None:
+        return
+
+    excluded = [
+        '/api/v1/status/',
+        '/api/v1/unauthorized/',
+        '/api/v1/forbidden/',
+        '/api/v1/auth_session/login/'
+    ]
+    if not auth.require_auth(request.path, excluded):
+        return
+    if auth.authorization_header(request) is None and \
+       auth.session_cookie(request) is None:
+        abort(401)
+
+    user = auth.current_user(request)
+    if user is None:
+        abort(403)
+    request.current_user = user
 
 
 if __name__ == "__main__":

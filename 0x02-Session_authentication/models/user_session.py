@@ -9,7 +9,7 @@ class UserSession(Base):
     """ User Session class
     """
     def __init__(self, *args: list, **kwargs: dict):
-        """ Constructor
+        """ Constructor Method
         """
         super().__init__(*args, **kwargs)
         if "user_id" not in kwargs:
